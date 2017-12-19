@@ -7,7 +7,7 @@ def merge(line):
         line.remove(0)
         line.append(0)
     for index in range(1, len(line)):
-        if line[index] == line[i - 1]:
+        if line[index] == line[index - 1]:
             line[index - 1] *= 2
             del line[index]
             line.append(0)
