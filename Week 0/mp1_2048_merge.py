@@ -6,10 +6,10 @@ def merge(line):
     for _ in range(line.count(0)):
         line.remove(0)
         line.append(0)
-    for i in range(1, len(line)):
-        if line[i] == line[i - 1]:
-            line[i - 1] *= 2
-            del line[i]
+    for index in range(1, len(line)):
+        if line[index] == line[i - 1]:
+            line[index - 1] *= 2
+            del line[index]
             line.append(0)
     return line
 
