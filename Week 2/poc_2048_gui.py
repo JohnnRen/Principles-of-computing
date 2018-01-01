@@ -2,9 +2,10 @@
 2048 GUI
 """
 
+import math
 import simplegui
 import codeskulptor
-import math
+
 
 # Tile Images
 IMAGENAME = "assets_2048.png"
@@ -19,7 +20,7 @@ LEFT = 3
 RIGHT = 4
 
 
-class GUI:
+class GUI(object):
     """
     Class to run game GUI.
     """
@@ -65,7 +66,7 @@ class GUI:
                                   [HALF_TILE_SIZE + val * TILE_SIZE, HALF_TILE_SIZE],
                                   [TILE_SIZE, TILE_SIZE],
                                   [col * TILE_SIZE + HALF_TILE_SIZE + BORDER_SIZE,
-                                      row * TILE_SIZE + HALF_TILE_SIZE + BORDER_SIZE],
+                                   row * TILE_SIZE + HALF_TILE_SIZE + BORDER_SIZE],
                                   [TILE_SIZE, TILE_SIZE])
 
     def start(self):

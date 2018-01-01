@@ -3,7 +3,6 @@ Clone of 2048 game.
 """
 
 import random
-import grid as grid
 import poc_2048_gui
 
 # Directions, DO NOT MODIFY
@@ -39,6 +38,72 @@ def merge(line):
     return tuple(line) != line_org
 
 
+class Grid(object):
+    """Implementation of grid object"""
+    _data = []
+    _grid_height = 0
+    _grid_width = 0
+
+    def __init__(self, grid_height, grid_width):
+        self._grid_height = grid_height
+        self._grid_width = grid_width
+        self.reset()
+
+    def get(self, row=0, col=0):
+        """Get the value at the given position"""
+        return self._data[row][col]
+
+    def set(self, row, col, value):
+        """Set the value at the given position"""
+        self._data[row][col] = value
+
+    def get_data(self):
+        """Get the data as a list"""
+        return self._data
+
+    def reset(self):
+        """Reset the grid"""
+        self._data = [[0 for _ in range(self._grid_width)]
+                      for _ in range(self._grid_height)]
+
+    def get_pos_generator(self, start, offset):
+        """Get a generator which iterate the position"""
+        current = start
+        index = 1
+        yield current[0], current[1], index
+        while True:
+            current = [current[0] + offset[0], current[1] + offset[1]]
+            if self._grid_height - 1 >= current[0] >= 0 and self._grid_width - 1 >= current[1] >= 0:
+                index += 1
+                yield current[0], current[1], index
+            else:
+                break
+
+    def get_line(self, line_index, direction):
+        """Get a line of the grid"""
+        line = []
+        offset = OFFSETS[direction]
+        start = {UP: [0, line_index],
+                 DOWN: [self._grid_height - 1, line_index],
+                 LEFT: [line_index, 0],
+                 RIGHT: [line_index, self._grid_width - 1]
+                 }[direction]
+        for row, col, _ in self.get_pos_generator(start, offset):
+            line.append(self.get(row, col))
+        return line
+
+    def set_line(self, line_index, direction, line):
+        """Set a line of the grid by providing a list"""
+        offset = OFFSETS[direction]
+        start = {UP: [0, line_index],
+                 DOWN: [self._grid_height - 1, line_index],
+                 LEFT: [line_index, 0],
+                 RIGHT: [line_index, self._grid_width - 1]
+                 }[direction]
+        for row, col, index in self.get_pos_generator(start, offset):
+            self.set(row, col, line[index - 1])
+
+
 class TwentyFortyEight(object):
     """
     Class to run the game logic.
@@ -50,16 +115,16 @@ class TwentyFortyEight(object):
     def __init__(self, grid_height, grid_width):
         self.grid_height = grid_height
         self.grid_width = grid_width
-        self.grid = grid.Grid(grid_height, grid_width)
-        self.new_tile()
-        self.new_tile()
+        self.reset()
 
     def reset(self):
         """
         Reset the game so the grid is empty except for two
         initial tiles.
         """
-        self.__init__(self.grid_height, self.grid_width)
+        self.grid = Grid(self.grid_height, self.grid_width)
+        self.new_tile()
+        self.new_tile()
 
     def __str__(self):
         """
@@ -106,8 +171,10 @@ class TwentyFortyEight(object):
         value = 2 if random.random() < 0.9 else 4
         row = random.choice(range(self.grid_height))
         col = random.choice(range(self.grid_width))
-        self.set_tile(row, col, value) if self.get_tile(
-            row, col) == 0 else self.new_tile()
+        if self.get_tile(row, col) == 0:
+            self.set_tile(row, col, value)
+        else:
+            self.new_tile()
 
     def set_tile(self, row, col, value):
         """
